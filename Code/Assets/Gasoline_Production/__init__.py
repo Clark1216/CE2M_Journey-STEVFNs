@@ -81,7 +81,7 @@ class Gasoline_Production_Asset(Asset_STEVFNs):
         lon = max(lon, -180.0)
         LON = str(lon)
         RE_TYPE = self.parameters_df["RE_type"]
-        profile_folder = os.path.join(self.parameters_folder, "profiles", self.asset_name, RE_TYPE, r"lat"+LAT)
+        profile_folder = os.path.join(self.parameters_folder, "Profiles", self.asset_name, RE_TYPE, r"lat"+LAT)
         profile_filename = r"_lat" + LAT + r"_lon" + LON + r".csv"
         profile_filename = os.path.join(profile_folder, profile_filename)
         full_profile = np.loadtxt(profile_filename)
