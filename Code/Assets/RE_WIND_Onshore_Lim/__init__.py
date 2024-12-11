@@ -107,7 +107,7 @@ class RE_WIND_Onshore_Lim_Asset(Asset_STEVFNs):
     
     def _load_RE_profile(self):
         """This function reads file and updates self.gen_profile """
-        lat_lon_df = self.network.lat_lon_df.iloc[self.target_node_location]
+        lat_lon_df = self.network.lat_lon_df.loc[self.target_node_location]
         lat = lat_lon_df["lat"]
         lat = np.int64(np.round((lat) / 0.5)) * 0.5
         lat = min(lat,90.0)
@@ -119,7 +119,7 @@ class RE_WIND_Onshore_Lim_Asset(Asset_STEVFNs):
         lon = max(lon, -180.0)
         LON = str(lon)
         RE_TYPE = self.parameters_df["RE_type"]
-        profile_folder = os.path.join(self.parameters_folder, "profiles", RE_TYPE, r"lat"+LAT)
+        profile_folder = os.path.join(self.parameters_folder, "profiles", self.asset_name, RE_TYPE, r"lat"+LAT)
         profile_filename = RE_TYPE + r"_lat" + LAT + r"_lon" + LON + r".csv"
         profile_filename = os.path.join(profile_folder, profile_filename)
         full_profile = np.loadtxt(profile_filename)
@@ -143,4 +143,10 @@ class RE_WIND_Onshore_Lim_Asset(Asset_STEVFNs):
         asset_size = self.size()
         asset_identity = self.asset_name + r"_" + self.parameters_df["RE_type"] + r"_location_" + str(self.target_node_location)
         return {asset_identity: asset_size}
+    
+    def inflow(self, loc):
+        return (self.flows * self.gen_profile).value
+    
+    def get_times(self):
+        return self.target_node_times
     

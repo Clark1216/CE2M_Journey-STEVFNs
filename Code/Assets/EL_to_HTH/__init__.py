@@ -65,3 +65,6 @@ class EL_to_HTH_Asset(Asset_STEVFNs):
         self._update_usage_constant()
         return
 
+    def outflow(self, loc):
+        return self.flows.value
+

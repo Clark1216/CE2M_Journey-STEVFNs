@@ -64,4 +64,12 @@ class NH3_to_EL_Asset(Asset_STEVFNs):
         self._update_sizing_constant()
         self._update_usage_constant()
         return
+    
+    def inflow(self, loc):
+        return self.conversion_fun(
+            self.flows, 
+            self.conversion_fun_params).value
+    
+    def outflow(self, loc):
+        return self.flows.value
 

@@ -83,13 +83,10 @@ def export_results(my_network):
 
 def export_total_data(my_network, location_parameters_df, asset_parameters_df):
     ''' Function to export results, generalized for all case studies'''
-    
-    location_names = list(location_parameters_df["location_name"])
     loc_names_set_list = list(set(asset_parameters_df["Location_1"]).union(set(asset_parameters_df["Location_2"])))
     loc_names_list = ["",]*4
     for counter1 in range(len(loc_names_set_list)):
-        loc_names_list[counter1] = location_names[loc_names_set_list[counter1]]
-    
+        loc_names_list[counter1] = loc_names_set_list[counter1]
     total_data_columns = ["country_1",
                   "country_2",
                   "country_3",
@@ -105,35 +102,29 @@ def export_total_data(my_network, location_parameters_df, asset_parameters_df):
     for counter1 in range(1,len(my_network.assets)):
         asset = my_network.assets[counter1]
         name = asset.asset_name
-        
+        dumbo = (name == "RE_Compiled")
         ### Exceptions in formatting or extracting results per type of asset ###
         if name == 'BESS' or name == 'NH3_Storage':
-            loc1 = asset.asset_structure["Location_1"]
-            loc_name = location_names[loc1]
+            loc_name  = asset.asset_structure["Location_1"]
             loc_names_set.add(loc_name)
             technology_name = name + r"_[" + loc_name + r"]"
             technology_cost = asset.cost.value
             
         elif name == 'RE_PV_Rooftop_Lim' or name == 'RE_PV_Openfield_Lim' or name == 'RE_WIND_Onshore_Lim' or name == 'RE_WIND_Offshore_Lim':
-            loc1 = asset.target_node_location
-            loc_name = location_names[loc1]
+            loc_name = asset.target_node_location
             loc_names_set.add(loc_name)
             technology_name = name + r"_[" + loc_name + r"]"
             technology_cost =  asset.cost.value
-
-        elif name == 'EL_Demand' or name == 'HTH_Demand':
-            loc1 = asset.node_location
-            loc_name = location_names[loc1]
+                  
+        elif name == 'EL_Demand' or name == 'HTH_Demand' or name == 'Cooling_Demand' or name == "RE_Compiled" or name == "LTH_Demand":
+            loc_name = asset.node_location
             loc_names_set.add(loc_name)
             technology_name = name + r"_[" + loc_name + r"]"
             technology_cost = asset.cost.value
             
         elif name == 'EL_Transport' or name == 'NH3_Transport':
-            loc1 = asset.asset_structure["Location_1"]
-            loc2 = asset.asset_structure["Location_2"]
-            loc_name_1 = location_names[loc1]
-            loc_name_2 = location_names[loc2]
-            loc_names_set.add(loc_name_1)
+            loc_name_1  = asset.asset_structure["Location_1"]
+            loc_name_2 = asset.asset_structure["Location_2"]
             loc_names_set.add(loc_name_1)
             technology_name = name + r"_[" + loc_name_1 + r"-" + loc_name_2 + r"]"
             technology_cost = asset.cost.value
@@ -142,8 +133,7 @@ def export_total_data(my_network, location_parameters_df, asset_parameters_df):
         
         ### The rest of the assets, in general ###
         else:
-            loc1 = asset.asset_structure["Location_1"]
-            loc_name = location_names[loc1]
+            loc_name = asset.asset_structure["Location_1"]
             loc_names_set.add(loc_name)
             technology_name = name + r"_[" + loc_name + r"]"
             technology_cost = asset.cost.value
@@ -163,12 +153,10 @@ def export_total_data(my_network, location_parameters_df, asset_parameters_df):
 
 def export_total_data_not_rounded(my_network, location_parameters_df, asset_parameters_df):
     ''' Function to export results, generalized for all case studies'''
-    
-    location_names = list(location_parameters_df["location_name"])
     loc_names_set_list = list(set(asset_parameters_df["Location_1"]).union(set(asset_parameters_df["Location_2"])))
     loc_names_list = ["",]*4
     for counter1 in range(len(loc_names_set_list)):
-        loc_names_list[counter1] = location_names[loc_names_set_list[counter1]]
+        loc_names_list[counter1] = loc_names_set_list[counter1]
     
     total_data_columns = ["country_1",
                   "country_2",
@@ -188,31 +176,26 @@ def export_total_data_not_rounded(my_network, location_parameters_df, asset_para
         
         ### Exceptions in formatting or extracting results per type of asset ###
         if name == 'BESS' or name == 'NH3_Storage':
-            loc1 = asset.asset_structure["Location_1"]
-            loc_name = location_names[loc1]
+            loc_name = asset.asset_structure["Location_1"]
             loc_names_set.add(loc_name)
             technology_name = name + r"_[" + loc_name + r"]"
             technology_cost = asset.cost.value
             
         elif name == 'RE_PV_Rooftop_Lim' or name == 'RE_PV_Openfield_Lim' or name == 'RE_WIND_Onshore_Lim' or name == 'RE_WIND_Offshore_Lim':
-            loc1 = asset.target_node_location
-            loc_name = location_names[loc1]
+            loc_name  = asset.target_node_location
             loc_names_set.add(loc_name)
             technology_name = name + r"_[" + loc_name + r"]"
             technology_cost =  asset.cost.value
-
-        elif name == 'EL_Demand' or name == 'HTH_Demand':
-            loc1 = asset.node_location
-            loc_name = location_names[loc1]
+            
+        elif name == 'EL_Demand' or name == 'HTH_Demand' or name == 'Cooling_Demand' or name == "RE_Compiled":
+            loc_name = asset.node_location
             loc_names_set.add(loc_name)
             technology_name = name + r"_[" + loc_name + r"]"
             technology_cost = asset.cost.value
             
         elif name == 'EL_Transport' or name == 'NH3_Transport':
-            loc1 = asset.asset_structure["Location_1"]
-            loc2 = asset.asset_structure["Location_2"]
-            loc_name_1 = location_names[loc1]
-            loc_name_2 = location_names[loc2]
+            loc_name_1 = asset.asset_structure["Location_1"]
+            loc_name_2 = asset.asset_structure["Location_2"]
             loc_names_set.add(loc_name_1)
             loc_names_set.add(loc_name_1)
             technology_name = name + r"_[" + loc_name_1 + r"-" + loc_name_2 + r"]"
@@ -222,8 +205,7 @@ def export_total_data_not_rounded(my_network, location_parameters_df, asset_para
         
         ### The rest of the assets, in general ###
         else:
-            loc1 = asset.asset_structure["Location_1"]
-            loc_name = location_names[loc1]
+            loc_name = asset.asset_structure["Location_1"]
             loc_names_set.add(loc_name)
             technology_name = name + r"_[" + loc_name + r"]"
             technology_cost = asset.cost.value

@@ -101,20 +101,18 @@ class Node_STEVFNs(__Node):
         return
     
     def calculate_total_output_flows(self):
-        total_output_flows = cp.Constant(0)
-        for output_edge in self.output_edges:
-            if total_output_flows.sign == "ZERO":
-                total_output_flows = output_edge.flow
-            else:
-                total_output_flows += output_edge.flow
+        total_output_flows = cp.sum([output_edge.flow for output_edge in self.output_edges])
+        # Check if total_output_flows == 0 because self.output_edges is empty
+        # Cannot check directly because total_output_flows == 0 will be interpreted as a CVXPY expression
+        if isinstance(total_output_flows, int):
+            return cp.Constant(0)
         return total_output_flows
     
     def calculate_total_input_flows(self):
-        total_input_flows = cp.Constant(0)
-        for input_edge in self.input_edges:
-            if total_input_flows.sign == "ZERO":
-                total_input_flows = input_edge.extract_flow()
-            else:
-                total_input_flows += input_edge.extract_flow()
+        total_input_flows = cp.sum([input_edge.extract_flow() for input_edge in self.input_edges])
+        # Check if total_input_flows == 0 because self.input_edges is empty
+        # Cannot check directly because total_input_flows == 0 will be interpreted as a CVXPY expression
+        if isinstance(total_input_flows, int):
+            return cp.Constant(0)
         return total_input_flows
     

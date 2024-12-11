@@ -1,0 +1,6 @@
+Type,sizing_constant,sizing_constant_unit,lifespan,lifespan_unit,RE_type,set_size,set_number
+Offshore_WINDOUT,0.858,G$/GWp,175200,h,Offshore_WINDOUT,24,0
+Onshore_WINDOUT,0.429,G$/GWp,175200,h,Onshore_WINDOUT,24,0
+Openfield_PVOUT,0.6,G$/GWp,175200,h,Openfield_PVOUT,24,0
+Rooftop_PVOUT,0.3,G$/GWp,175200,h,Rooftop_PVOUT,24,0
+Floating_PVOUT,0.2,G$/GWp,175201,h,Floating_PVOUT,24,0

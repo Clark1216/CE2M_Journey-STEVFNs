@@ -239,3 +239,38 @@ class twin_line_artist:
         if show == 1:
             plt.show()
         return
+    
+class linegraph_artist:
+    """Class for drawing linegraph with labels for NH3 inflow and outflow with only twin assets"""
+    def __init__(self, title=None):
+        self.flows_dictionary = dict()
+        self.ylabel = ""
+        self.xlabel = ""
+        if title != None:
+            self.title = title
+        return
+    
+    def add_asset(self, asset_name, asset):
+        self.flows_dictionary[asset_name] = asset.get_plot_data()
+        return
+    
+    def set_times(self, times):
+        self.times = times
+        return
+    
+    def plot(self, show = 1, show_legend = 1):
+        if not(hasattr(self, "fig")) or not(hasattr(self, "ax")):
+            self.fig, self.ax = plt.subplots()
+        if not(hasattr(self, "times")):
+            self.times = np.arange(self.flows_dictionary[list(self.flows_dictionary)[0]].size)
+        for flow_name, flow in self.flows_dictionary.items():
+            self.ax.plot(self.times, flow, label = flow_name)
+        if hasattr(self, "title"):
+            self.ax.set_title(self.title)
+        self.ax.set_ylabel(self.ylabel)
+        self.ax.set_xlabel(self.xlabel)
+        if show_legend == 1:
+            self.ax.legend()
+        if show == 1:
+            plt.show()
+        return

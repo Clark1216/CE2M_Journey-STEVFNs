@@ -67,7 +67,7 @@ class RE_Asset(Asset_STEVFNs):
     
     def _load_RE_profile(self):
         """This function reads file and updates self.gen_profile """
-        lat_lon_df = self.network.lat_lon_df.iloc[self.node_location]
+        lat_lon_df = self.network.lat_lon_df.loc[self.node_location]
         lat = lat_lon_df["lat"]
         lat = np.int64(np.round((lat) / 0.5)) * 0.5
         lat = min(lat,90.0)

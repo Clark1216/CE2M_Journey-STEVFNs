@@ -63,4 +63,7 @@ class NH3_to_HTH_Asset(Asset_STEVFNs):
         self._update_sizing_constant()
         self._update_usage_constant()
         return
+    
+    def outflow(self, loc):
+        return self.flows.value
 

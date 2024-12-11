@@ -217,6 +217,20 @@ class BESS_Asset(Multi_Asset):
         asset_size = effective_component_sizes.max()
         return asset_size
     
+    def inflow(self, loc):
+        my_component = self.assets_dictionary["Discharging"]
+        return my_component.conversion_fun(
+            my_component.flows, 
+            my_component.conversion_fun_params).value
+    
+    def get_times(self):
+        return self.assets_dictionary["Discharging"].source_node_times
+    
+    def outflow(self, loc):
+        my_component = self.assets_dictionary["Charging"]
+        return my_component.flows.value
+    
+    
     
     
     

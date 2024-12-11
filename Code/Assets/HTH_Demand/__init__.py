@@ -26,7 +26,7 @@ class HTH_Demand_Asset(Asset_STEVFNs):
         self.node_location = asset_structure["Location_1"]
         self.node_times = np.arange(asset_structure["Start_Time"], 
                                            asset_structure["End_Time"], 
-                                           asset_structure["Period"])
+                                           self.period)
         self.number_of_edges = len(self.node_times)
         self.flows = cp.Parameter(shape = self.number_of_edges, nonneg=True)
         return
@@ -46,7 +46,7 @@ class HTH_Demand_Asset(Asset_STEVFNs):
     
     def _update_parameters(self):
         profile_filename = self.parameters_df["profile_filename"] + r".csv"
-        profile_filename = os.path.join(self.parameters_folder, "profiles", profile_filename)
+        profile_filename = os.path.join(self.parameters_folder, "Profiles", self.asset_name, profile_filename)
         profile_df = pd.read_csv(profile_filename)
         full_profile = np.array(profile_df["Demand"])
         set_size = self.parameters_df["set_size"]

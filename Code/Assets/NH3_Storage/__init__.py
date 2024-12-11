@@ -66,4 +66,18 @@ class NH3_Storage_Asset(Asset_STEVFNs):
         self._update_sizing_constant()
         self._update_usage_constant()
         return
-
+    
+    def outflow(self, loc):
+        return self.flows.value
+    
+    def inflow(self, loc):
+        temp_flows = self.conversion_fun(
+            self.flows,
+            self.conversion_fun_params).value
+        component_flows = np.zeros_like(temp_flows)
+        component_flows[1:] = temp_flows[:-1]
+        component_flows[0] = temp_flows[-1]
+        return component_flows
+    
+    def get_times(self):
+        return np.arange(self.asset_structure["Start_Time"], self.asset_structure["End_Time"], self.period)

@@ -31,8 +31,8 @@ class EL_Transport_Asset(Asset_STEVFNs):
     
     def _update_distance(self):
         #Function that calculates the distance between the source and target nodes#
-        lat_lon_0 = self.network.lat_lon_df.iloc[int(self.source_node_location)]
-        lat_lon_1 = self.network.lat_lon_df.iloc[int(self.target_node_location)]
+        lat_lon_0 = self.network.lat_lon_df.loc[self.source_node_location]
+        lat_lon_1 = self.network.lat_lon_df.loc[self.target_node_location]
         lat_0 = lat_lon_0["lat"]/180 * np.pi
         lat_1 = lat_lon_1["lat"]/180 * np.pi
         lon_d = (lat_lon_1["lon"] - lat_lon_0["lon"])/180 * np.pi
@@ -51,7 +51,7 @@ class EL_Transport_Asset(Asset_STEVFNs):
     
     def define_structure(self, asset_structure):
         super().define_structure(asset_structure)
-        self.target_node_times = self.target_node_times + asset_structure["Transport_Time"]
+        self.target_node_times = self.target_node_times + self.transport_time
         self.target_node_times = self.target_node_times % asset_structure["End_Time"]
         self.flows = cp.Variable(self.number_of_edges*2, nonneg = True)
         return
@@ -106,4 +106,32 @@ class EL_Transport_Asset(Asset_STEVFNs):
         self._update_sizing_constant()
         self._update_usage_constant()
         return
+    
+    def inflow(self, loc):
+        total_component_flows = self.conversion_fun(
+            self.flows, 
+            self.conversion_fun_params).value
+        total_length = len(total_component_flows)
+        if self.source_node_location == loc:
+            return total_component_flows[int(total_length/2):]
+        else:
+            return total_component_flows[:int(total_length/2)]
+        
+    def outflow(self, loc):
+        total_component_flows = self.flows.value
+        total_length = len(total_component_flows)
+        if self.source_node_location == loc:
+            return total_component_flows[:int(total_length/2)]
+        else:
+            return total_component_flows[int(total_length/2):]
+        
+        
+        
+     
+            
+            
+            
+            
+    
+            
 

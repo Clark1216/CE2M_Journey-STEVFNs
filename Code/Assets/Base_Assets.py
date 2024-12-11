@@ -20,6 +20,8 @@ class Asset_STEVFNs:
     asset_name = "Asset_STEVFNs"
     source_node_type = "NULL"
     target_node_type = "NULL"
+    period = 1
+    transport_time = 0
     cost_fun = staticmethod(lambda flows, params: cp.Constant(0))
     conversion_fun = staticmethod(lambda flow, params: flow)
     def __init__(self):
@@ -67,20 +69,20 @@ class Asset_STEVFNs:
         self.source_node_location = asset_structure["Location_1"]
         self.source_node_times = np.arange(asset_structure["Start_Time"], 
                                            asset_structure["End_Time"], 
-                                           asset_structure["Period"])
+                                           self.period)
         self.target_node_location = asset_structure["Location_2"]
         self.target_node_times = np.arange(asset_structure["Start_Time"], 
                                            asset_structure["End_Time"], 
-                                           asset_structure["Period"])
+                                           self.period)
         self.number_of_edges = len(self.source_node_times)
         self.flows = cp.Constant(np.zeros(self.number_of_edges))
         return
     
     def _load_parameters_df(self, asset_type):
-        self.parameters_folder = os.path.join(self.network.base_folder, "Code", "Assets", 
-                                           self.asset_name)
-        parameters_filename = os.path.join(self.parameters_folder, "parameters.csv")
-        self.parameters_df = pd.read_csv(parameters_filename).iloc[asset_type]
+        self.parameters_folder = os.path.join(self.network.base_folder, "Data", "Asset_Parameters")
+        parameters_filename = os.path.join(self.parameters_folder, self.asset_name + ".csv")
+        df = pd.read_csv(parameters_filename, dtype = {"Type":str})
+        self.parameters_df = df.loc[df['Type'] == asset_type].iloc[0]
         return
     
     def _update_parameters(self):
@@ -132,7 +134,10 @@ class Asset_STEVFNs:
         asset_size = self.asset_size()
         asset_identity = self.asset_name
         return {asset_identity: asset_size}
-
+    
+    def get_times(self):
+        return self.source_node_times
+    
             
 class Multi_Asset(Asset_STEVFNs):
     """Class that contains multiple assets"""

@@ -21,7 +21,7 @@ class Network_STEVFNs:
         self.assets = []
         self.costs = []
         self.constraints = []
-        self.nodes_df = pd.Series([], index = pd.MultiIndex.from_tuples([], names = ["location", "type", "time"]), dtype = "O")
+        self.nodes_dict = {}
         self.base_folder = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
         self.system_parameters_df = pd.DataFrame({
             "parameter": ["timestep", "discount_rate", "project_life"],
@@ -32,18 +32,19 @@ class Network_STEVFNs:
         self.scenario_name = ""
         return
     
-    def generate_node(self, node_location, node_type, node_time):
+    def compile_nodes(self):
+        self.nodes_df = pd.Series(self.nodes_dict)
+        self.nodes_df.index.set_names(("location", "type", "time"), inplace=True)
+    
+    def generate_node(self, node_info):
         new_node = Node_STEVFNs()
-        node_df = pd.Series([new_node], 
-                            index = pd.MultiIndex.from_tuples([(node_location, node_type, node_time)], 
-                                    names = ["location", "type", "time"]))
-        self.nodes_df = pd.concat([self.nodes_df, node_df])
+        self.nodes_dict[node_info] = new_node
         return
     
     def extract_node(self, node_location, node_type, node_time):
-        if not((node_location, node_type, node_time) in self.nodes_df.index):
-            self.generate_node(node_location, node_type, node_time)
-        return self.nodes_df[node_location, node_type, node_time]
+        if (node_location, node_type, node_time) not in self.nodes_dict:
+            self.generate_node((node_location, node_type, node_time))
+        return self.nodes_dict[node_location, node_type, node_time]
     
     def add_asset(self, asset):
         asset.network = self
@@ -58,8 +59,9 @@ class Network_STEVFNs:
         return
     
     def build_system_structure_properties(self):
-        self.system_structure_properties["simulated_timesteps"] = (self.nodes_df.index.get_level_values("time").max() -
-                                                                   self.nodes_df.index.get_level_values("time").min() + 1)
+        self.system_structure_properties["simulated_timesteps"] = (max(i[2] for i in self.nodes_dict.keys())
+                                                                   - min(i[2] for i in self.nodes_dict.keys())
+                                                                   + 1)
         return
     
     def build_constraints(self):
@@ -68,16 +70,12 @@ class Network_STEVFNs:
         return
     
     def _build_nodes(self):
-        for counter1 in range(self.nodes_df.size):
-            node = self.nodes_df.iloc[counter1]
+        for node in self.nodes_dict.values():
             node.build_constraints()
         return
     
     def _update_constraints(self):
-        self.constraints = []
-        for counter1 in range(self.nodes_df.size):
-            node = self.nodes_df.iloc[counter1]
-            self.constraints += node.constraints
+        self.constraints = sum([node.constraints for node in self.nodes_dict.values()], [])
         return
     
     
@@ -149,6 +147,29 @@ class Network_STEVFNs:
             asset_type = asset_parameters_df.iloc[counter1]["Asset_Type"]
             self.assets[asset_number].update(asset_type)
         return
+    
+    def update_initial(self, location_parameters_df, system_parameters_df):
+        #updates system parameters#
+        for counter1 in range(len(system_parameters_df)):
+            tdf = system_parameters_df.iloc[counter1]
+            self.system_parameters_df.loc[tdf["parameter"], "value"] = tdf["value"]
+            self.system_parameters_df.loc[tdf["parameter"], "unit"] = tdf["unit"]
+        #Update Location lat,lon#
+        for counter1 in range(len(location_parameters_df)):
+            location = location_parameters_df.iloc[counter1]["Location"]
+            self.lat_lon_df.loc[location, "lat"] = location_parameters_df.iloc[counter1]["lat"]
+            self.lat_lon_df.loc[location, "lon"] = location_parameters_df.iloc[counter1]["lon"]
+        return
+    
+    def update_params(self, asset_parameters_df):
+        #updates system parameters#
+        #update Assets#
+        for counter1 in range(len(asset_parameters_df)):
+            asset_number = asset_parameters_df.iloc[counter1]["Asset_Number"]
+            asset_type = asset_parameters_df.iloc[counter1]["Asset_Type"]
+            self.assets[asset_number].update(asset_type)
+        return
+
     
 
 

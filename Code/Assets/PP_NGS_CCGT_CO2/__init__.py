@@ -126,3 +126,19 @@ class PP_NGS_CCGT_CO2_Asset(Asset_STEVFNs):
         asset_size = self.size()
         asset_identity = self.asset_name + r"_location_" + str(self.node_location)
         return {asset_identity: asset_size}
+    
+    
+    def inflow(self, loc):
+        return self.conversion_fun(
+            self.flows, 
+            self.conversion_fun_params).value
+    
+    def emissions(self):
+        return abs(self.conversion_fun_2(
+            self.flows, 
+            self.conversion_fun_params_2).value)
+        
+    
+    def get_times(self):
+        return self.source_node_times
+    

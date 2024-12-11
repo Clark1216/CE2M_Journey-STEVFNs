@@ -10,7 +10,6 @@ import cvxpy as cp
 from ..Base_Assets import Asset_STEVFNs
 import numpy as np
 
-
 class EL_to_NH3_Asset(Asset_STEVFNs):
     """Class of EL to NH3 conversion asset"""
     asset_name = "EL_to_NH3"
@@ -64,4 +63,16 @@ class EL_to_NH3_Asset(Asset_STEVFNs):
         self._update_sizing_constant()
         self._update_usage_constant()
         return
+    
+    def inflow(self, loc):
+        return self.conversion_fun(
+        self.flows,
+        self.conversion_fun_params).value
+    #NH3
+    
+    def outflow(self, loc): 
+        return self.flows.value
+    # EL
+    
+
 
